@@ -1,5 +1,6 @@
 import outputWGSL from './output.wgsl?raw';
 import computeWGSL from './compute.wgsl?raw';
+import scene from './scene.js';
 
 // Initialize WebGPU context
 const canvas = document.querySelector("canvas");
@@ -88,6 +89,35 @@ const computePipeline = device.createComputePipeline({
     entryPoint: "compute_main",
   }
 });
+
+// Populate the GPU buffers from imported scene data
+const vertexBuffer = device.createBuffer({
+  label: "vertex buffer",
+  size: scene.vertexArray.byteLength,
+  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+});
+device.queue.writeBuffer(vertexBuffer, 0, scene.vertexArray);
+
+const indexBuffer = device.createBuffer({
+  label: "index buffer",
+  size: scene.indexArray.byteLength,
+  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+});
+device.queue.writeBuffer(indexBuffer, 0, scene.indexArray);
+
+const meshBuffer = device.createBuffer({
+  label: "mesh buffer",
+  size: scene.meshArray.byteLength,
+  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+});
+device.queue.writeBuffer(meshBuffer, 0, scene.meshArray);
+
+const materialBuffer = device.createBuffer({
+  label: "material buffer",
+  size: scene.materialArray.byteLength,
+  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+});
+device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
 const computeBindGroup = device.createBindGroup({
   layout: computePipeline.getBindGroupLayout(0),
