@@ -1,4 +1,5 @@
 import outputWGSL from './output.wgsl?raw';
+import computeWGSL from './compute.wgsl?raw';
 
 // Initialize WebGPU context
 const canvas = document.querySelector("canvas");
@@ -73,8 +74,40 @@ const renderOutputBindGroup = device.createBindGroup({
   ],
 });
 
+// Setup the compute pipeline
+const computeShaderModule = device.createShaderModule({
+  label: "Compute shader",
+  code: computeWGSL
+});
+
+const computePipeline = device.createComputePipeline({
+  label: "Compute pipeline",
+  layout: 'auto',
+  compute: {
+    module: computeShaderModule,
+    entryPoint: "compute_main",
+  }
+});
+
+const computeBindGroup = device.createBindGroup({
+  layout: computePipeline.getBindGroupLayout(0),
+  entries: [
+    {
+      binding: 0,
+      resource: texture.createView(),
+    },
+  ],
+});
+
 const renderLoop = () => {
   const encoder = device.createCommandEncoder();
+
+  // Do the compute 
+  const computePass = encoder.beginComputePass();
+  computePass.setPipeline(computePipeline);
+  computePass.setBindGroup(0, computeBindGroup);
+  computePass.dispatchWorkgroups(64, 64);
+  computePass.end();
 
   // Output render
   const pass = encoder.beginRenderPass({
