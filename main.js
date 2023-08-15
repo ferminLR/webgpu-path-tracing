@@ -126,6 +126,22 @@ const computeBindGroup = device.createBindGroup({
       binding: 0,
       resource: texture.createView(),
     },
+    {
+      binding: 1,
+      resource: { buffer: vertexBuffer },
+    },
+    {
+      binding: 2,
+      resource: { buffer: indexBuffer }
+    },
+    {
+      binding: 3,
+      resource: { buffer: meshBuffer }
+    },
+    {
+      binding: 4,
+      resource: { buffer: materialBuffer }
+    },
   ],
 });
 
