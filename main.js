@@ -148,6 +148,15 @@ const materialBuffer = device.createBuffer({
 });
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
+// Compute shader uniforms
+const computeUniformsArray = new Float32Array([100.0, 1.0]);
+const computeUniformsBuffer = device.createBuffer({
+  label: "Compute uniforms",
+  size: computeUniformsArray.byteLength,
+  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+});
+device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
+
 // Two bind groups to accumulate compute passes
 const computeBindGroup = [
   device.createBindGroup({
@@ -177,6 +186,10 @@ const computeBindGroup = [
         binding: 5,
         resource: { buffer: materialBuffer }
       },
+      {
+        binding: 6,
+        resource: { buffer: computeUniformsBuffer },
+      },
     ],
   }),
   device.createBindGroup({
@@ -206,10 +219,15 @@ const computeBindGroup = [
         binding: 5,
         resource: { buffer: materialBuffer }
       },
+      {
+        binding: 6,
+        resource: { buffer: computeUniformsBuffer },
+      },
     ],
   }),
 ]
 
+var initialSeed = 100.0;
 let step = 1;
 
 const renderLoop = () => {
@@ -236,10 +254,15 @@ const renderLoop = () => {
   pass.draw(6, 1);
   pass.end();
 
-  step++;
+  // Update uniforms buffer
+  initialSeed += 0.01;
+  computeUniformsArray[0] = initialSeed;
+  computeUniformsArray[1] = 1.0/step++;
+  device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
 
   // Submit the command buffer
   device.queue.submit([encoder.finish()]);
 }
 
-renderLoop();
+const UPDATE_INTERVAL = 100; // Update every 100ms
+setInterval(renderLoop, UPDATE_INTERVAL);

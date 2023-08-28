@@ -4,6 +4,7 @@
 @group(0) @binding(3) var<storage> index: array<vec3u>;
 @group(0) @binding(4) var<storage> meshes: array<Mesh>;
 @group(0) @binding(5) var<storage> materials: array<Material>;
+@group(0) @binding(6) var<uniform> uniforms: Uniforms;
 
 struct Mesh {
   vi : u32, // first vertex
@@ -29,6 +30,11 @@ struct HitRecord {
   material : Material,
   t: f32,
 }
+
+struct Uniforms {
+  seed: f32,
+  weight: f32,
+};
 
 var<private> seed : f32;
 var<private> pixel : vec2f;
@@ -207,13 +213,13 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   // set the private vars
   let pos = GlobalInvocationID.xy;
   pixel = vec2f(pos)/512.0;
-  seed = 100.0; // initial seed
+  seed = uniforms.seed; // initial seed
 
   // setup camera
   var ray : Ray;
   let camera_center = vec3(0.0, 0.0, 3.5);
   var color = vec4(0.0, 0.0, 0.0, 1.0);
-  var passes = 100;
+  var passes = 5;
   let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
   ray.origin = camera_center + vec3(camera_disk, 0.0);
 
@@ -225,5 +231,11 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
     color += vec4(ray_color(ray), 1.0);
   }
 
-  textureStore(outputTex, pos, color/f32(passes));
+  // weighted average between the new and the accumulated image
+  let newImage = color/f32(passes);
+  let accumulated = textureLoad(inputTex, pos, 0);
+  let resultColor = uniforms.weight * newImage
+                  + (1.0 - uniforms.weight) * accumulated;
+  
+  textureStore(outputTex, pos, resultColor);
 }
