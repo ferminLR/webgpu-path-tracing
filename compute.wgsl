@@ -118,6 +118,9 @@ fn triangle_hit(r : Ray, v0 : vec3<f32>, v1: vec3<f32>, v2 : vec3<f32>, t : ptr<
   *t = inv_det * dot(e2, q);
   if (*t < EPSILON) { return false; }
 
+  // backface culling
+  if (dot(cross(e1, e2), r.direction) > 0.0 ){ return false; }
+
   return true;
 }
 
