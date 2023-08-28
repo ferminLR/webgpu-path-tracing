@@ -1,8 +1,9 @@
 @group(0) @binding(0) var outputTex : texture_storage_2d<rgba8unorm, write>;
-@group(0) @binding(1) var<storage> vertex: array<vec3f>;
-@group(0) @binding(2) var<storage> index: array<vec3u>;
-@group(0) @binding(3) var<storage> meshes: array<Mesh>;
-@group(0) @binding(4) var<storage> materials: array<Material>;
+@group(0) @binding(1) var inputTex : texture_2d<f32>;
+@group(0) @binding(2) var<storage> vertex: array<vec3f>;
+@group(0) @binding(3) var<storage> index: array<vec3u>;
+@group(0) @binding(4) var<storage> meshes: array<Mesh>;
+@group(0) @binding(5) var<storage> materials: array<Material>;
 
 struct Mesh {
   vi : u32, // first vertex

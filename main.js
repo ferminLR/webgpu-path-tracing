@@ -49,7 +49,8 @@ const sampler = device.createSampler({
   minFilter: 'linear',
 });
 
-const texture = device.createTexture({
+// Two textures for ping pong swap to accumulate compute passes
+const textureA = device.createTexture({
   size: {
     width: 512,
     height: 512,
@@ -59,21 +60,49 @@ const texture = device.createTexture({
     GPUTextureUsage.COPY_DST |
     GPUTextureUsage.STORAGE_BINDING |
     GPUTextureUsage.TEXTURE_BINDING,
-})
-
-const renderOutputBindGroup = device.createBindGroup({
-  layout: renderOutputPipeline.getBindGroupLayout(0),
-  entries: [
-    {
-      binding: 0,
-      resource: sampler,
-    },
-    {
-      binding: 1,
-      resource: texture.createView(),
-    },
-  ],
 });
+
+const textureB = device.createTexture({
+  size: {
+    width: 512,
+    height: 512,
+  },
+  format: 'rgba8unorm',
+  usage:
+    GPUTextureUsage.COPY_DST |
+    GPUTextureUsage.STORAGE_BINDING |
+    GPUTextureUsage.TEXTURE_BINDING,
+});
+
+// Two bind groups to render the last accumulated compute pass
+const renderOutputBindGroup = [
+  device.createBindGroup({
+    layout: renderOutputPipeline.getBindGroupLayout(0),
+    entries: [
+      {
+        binding: 0,
+        resource: sampler,
+      },
+      {
+        binding: 1,
+        resource: textureA.createView(),
+      },
+    ],
+  }),
+  device.createBindGroup({
+    layout: renderOutputPipeline.getBindGroupLayout(0),
+    entries: [
+      {
+        binding: 0,
+        resource: sampler,
+      },
+      {
+        binding: 1,
+        resource: textureB.createView(),
+      },
+    ],
+  }),
+];
 
 // Setup the compute pipeline
 const computeShaderModule = device.createShaderModule({
@@ -119,31 +148,69 @@ const materialBuffer = device.createBuffer({
 });
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
-const computeBindGroup = device.createBindGroup({
-  layout: computePipeline.getBindGroupLayout(0),
-  entries: [
-    {
-      binding: 0,
-      resource: texture.createView(),
-    },
-    {
-      binding: 1,
-      resource: { buffer: vertexBuffer },
-    },
-    {
-      binding: 2,
-      resource: { buffer: indexBuffer }
-    },
-    {
-      binding: 3,
-      resource: { buffer: meshBuffer }
-    },
-    {
-      binding: 4,
-      resource: { buffer: materialBuffer }
-    },
-  ],
-});
+// Two bind groups to accumulate compute passes
+const computeBindGroup = [
+  device.createBindGroup({
+    layout: computePipeline.getBindGroupLayout(0),
+    entries: [
+      {
+        binding: 0,
+        resource: textureA.createView(),
+      },
+      {
+        binding: 1,
+        resource: textureB.createView(),
+      },
+      {
+        binding: 2,
+        resource: { buffer: vertexBuffer },
+      },
+      {
+        binding: 3,
+        resource: { buffer: indexBuffer }
+      },
+      {
+        binding: 4,
+        resource: { buffer: meshBuffer }
+      },
+      {
+        binding: 5,
+        resource: { buffer: materialBuffer }
+      },
+    ],
+  }),
+  device.createBindGroup({
+    layout: computePipeline.getBindGroupLayout(0),
+    entries: [
+      {
+        binding: 0,
+        resource: textureB.createView(),
+      },
+      {
+        binding: 1,
+        resource: textureA.createView(),
+      },
+      {
+        binding: 2,
+        resource: { buffer: vertexBuffer },
+      },
+      {
+        binding: 3,
+        resource: { buffer: indexBuffer }
+      },
+      {
+        binding: 4,
+        resource: { buffer: meshBuffer }
+      },
+      {
+        binding: 5,
+        resource: { buffer: materialBuffer }
+      },
+    ],
+  }),
+]
+
+let step = 1;
 
 const renderLoop = () => {
   const encoder = device.createCommandEncoder();
@@ -151,7 +218,7 @@ const renderLoop = () => {
   // Do the compute 
   const computePass = encoder.beginComputePass();
   computePass.setPipeline(computePipeline);
-  computePass.setBindGroup(0, computeBindGroup);
+  computePass.setBindGroup(0, computeBindGroup[step%2]);
   computePass.dispatchWorkgroups(64, 64);
   computePass.end();
 
@@ -165,9 +232,11 @@ const renderLoop = () => {
     }]
   });
   pass.setPipeline(renderOutputPipeline);
-  pass.setBindGroup(0, renderOutputBindGroup);
+  pass.setBindGroup(0, renderOutputBindGroup[step%2]);
   pass.draw(6, 1);
   pass.end();
+
+  step++;
 
   // Submit the command buffer
   device.queue.submit([encoder.finish()]);
