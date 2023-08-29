@@ -231,8 +231,12 @@ let initialSeed = 100.0;
 let step = 1;
 let camera_azimuth = 0.0;
 let camera_elevation = 0.0;
+let requestId;
 
 const renderLoop = () => {
+
+  if (step > 100) return; // stop passes after 100 steps
+
   const encoder = device.createCommandEncoder();
 
   // Do the compute 
@@ -266,10 +270,11 @@ const renderLoop = () => {
 
   // Submit the command buffer
   device.queue.submit([encoder.finish()]);
+
+  requestId = requestAnimationFrame(renderLoop);
 }
 
-const UPDATE_INTERVAL = 100; // Update every 100ms
-setInterval(renderLoop, UPDATE_INTERVAL);
+requestId = requestAnimationFrame(renderLoop);
 
 // Camera orbit controls
 addEventListener( 'pointerdown', () => {
@@ -277,7 +282,11 @@ addEventListener( 'pointerdown', () => {
   const onPointerMove = (e) => {
     camera_azimuth += e.movementX * Math.PI/180;
     camera_elevation += e.movementY * Math.PI/180;
-    step = 0.0;
+
+    // reset renderloop
+    step = 0.0;    
+    if(requestId) cancelAnimationFrame(requestId);
+    requestId = requestAnimationFrame(renderLoop);
   }
 
   addEventListener('pointermove', onPointerMove);
