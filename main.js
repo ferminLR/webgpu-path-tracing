@@ -227,8 +227,10 @@ const computeBindGroup = [
   }),
 ]
 
-var initialSeed = 100.0;
+let initialSeed = 100.0;
 let step = 1;
+let camera_azimuth = 0.0;
+let camera_elevation = 0.0;
 
 const renderLoop = () => {
   const encoder = device.createCommandEncoder();
@@ -257,7 +259,9 @@ const renderLoop = () => {
   // Update uniforms buffer
   initialSeed += 0.01;
   computeUniformsArray[0] = initialSeed;
-  computeUniformsArray[1] = 1.0/step++;
+  computeUniformsArray[1] = 1.0/++step;
+  computeUniformsArray[2] = camera_azimuth;
+  computeUniformsArray[3] = camera_elevation;
   device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
 
   // Submit the command buffer
@@ -266,3 +270,20 @@ const renderLoop = () => {
 
 const UPDATE_INTERVAL = 100; // Update every 100ms
 setInterval(renderLoop, UPDATE_INTERVAL);
+
+// Camera orbit controls
+addEventListener( 'pointerdown', () => {
+
+  const onPointerMove = (e) => {
+    camera_azimuth += e.movementX * Math.PI/180;
+    camera_elevation += e.movementY * Math.PI/180;
+    step = 0.0;
+  }
+
+  addEventListener('pointermove', onPointerMove);
+
+  addEventListener('pointerup', () => {
+    removeEventListener( 'pointermove', onPointerMove );
+  });
+
+});
