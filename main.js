@@ -228,7 +228,7 @@ const computeBindGroup = [
 ]
 
 let initialSeed = 100.0;
-let step = 1;
+let step = 0;
 let cameraAzimuth = 0.0;
 let cameraElevation = 0.0;
 let requestId;
@@ -284,7 +284,7 @@ addEventListener( 'pointerdown', () => {
     cameraElevation += e.movementY * Math.PI/180;
 
     // reset renderloop
-    step = 0.0;    
+    step = 0;
     if(requestId) cancelAnimationFrame(requestId);
     requestId = requestAnimationFrame(renderLoop);
   }
