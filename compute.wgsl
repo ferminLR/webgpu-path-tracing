@@ -34,6 +34,8 @@ struct HitRecord {
 struct Uniforms {
   seed: f32,
   weight: f32,
+  cam_azimuth: f32,
+  cam_elevation: f32,
 };
 
 var<private> seed : f32;
@@ -223,22 +225,41 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   let camera_center = vec3(0.0, 0.0, 3.5);
   var color = vec4(0.0, 0.0, 0.0, 1.0);
   var passes = 5;
-  let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
-  ray.origin = camera_center + vec3(camera_disk, 0.0);
+
+  // camera rotation
+  let camera_rot_y = mat3x3(
+    cos(uniforms.cam_azimuth), 0.0, sin(uniforms.cam_azimuth),
+    0.0, 1.0, 0.0,
+    -sin(uniforms.cam_azimuth), 0.0, cos(uniforms.cam_azimuth),
+  );
+  let camera_rot_x = mat3x3(
+    1.0, 0.0, 0.0,
+    0.0, cos(uniforms.cam_elevation), -sin(uniforms.cam_elevation),
+    0.0, sin(uniforms.cam_elevation), cos(uniforms.cam_elevation),
+  );
+  let camera_matrix = camera_rot_y * camera_rot_x;
 
   // repeat each pixel "passes" times
   for(var i=0; i<passes; i++){
+    let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
+    ray.origin = camera_center + vec3(camera_disk, 0.0);
+
     let pos_norm = (vec2f(pos)+v2random())/256.0 - 1.0;
     let pos_in_camera_plane = vec3(ray.origin.xy + pos_norm*0.05, ray.origin.z - 0.1);
     ray.direction = normalize(pos_in_camera_plane - ray.origin);
+    
+    // apply camera transformation
+    ray.direction = camera_matrix * ray.direction;
+    ray.origin = camera_matrix * ray.origin;
+
     color += vec4(ray_color(ray), 1.0);
   }
 
   // weighted average between the new and the accumulated image
   let newImage = color/f32(passes);
   let accumulated = textureLoad(inputTex, pos, 0);
-  let resultColor = uniforms.weight * newImage
+  let result_color = uniforms.weight * newImage
                   + (1.0 - uniforms.weight) * accumulated;
   
-  textureStore(outputTex, pos, resultColor);
+  textureStore(outputTex, pos, result_color);
 }

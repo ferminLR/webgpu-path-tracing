@@ -149,7 +149,7 @@ const materialBuffer = device.createBuffer({
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
 // Compute shader uniforms
-const computeUniformsArray = new Float32Array([100.0, 1.0]);
+const computeUniformsArray = new Float32Array([100.0, 1.0, 0.0, 0.0]);
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",
   size: computeUniformsArray.byteLength,
