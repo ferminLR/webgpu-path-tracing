@@ -229,8 +229,8 @@ const computeBindGroup = [
 
 let initialSeed = 100.0;
 let step = 1;
-let camera_azimuth = 0.0;
-let camera_elevation = 0.0;
+let cameraAzimuth = 0.0;
+let cameraElevation = 0.0;
 let requestId;
 
 const renderLoop = () => {
@@ -264,8 +264,8 @@ const renderLoop = () => {
   initialSeed += 0.01;
   computeUniformsArray[0] = initialSeed;
   computeUniformsArray[1] = 1.0/++step;
-  computeUniformsArray[2] = camera_azimuth;
-  computeUniformsArray[3] = camera_elevation;
+  computeUniformsArray[2] = cameraAzimuth;
+  computeUniformsArray[3] = cameraElevation;
   device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
 
   // Submit the command buffer
@@ -280,8 +280,8 @@ requestId = requestAnimationFrame(renderLoop);
 addEventListener( 'pointerdown', () => {
 
   const onPointerMove = (e) => {
-    camera_azimuth += e.movementX * Math.PI/180;
-    camera_elevation += e.movementY * Math.PI/180;
+    cameraAzimuth += e.movementX * Math.PI/180;
+    cameraElevation += e.movementY * Math.PI/180;
 
     // reset renderloop
     step = 0.0;    
