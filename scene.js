@@ -132,10 +132,10 @@ vi = totalVertices/4;
 fi = totalIndices/4;
 meshArray[meshArrayIndex++] = totalVertices/4;
 meshArray[meshArrayIndex++] = totalIndices/4;
-addVertex(-0.320999, 0.972590, 0.320999)
-addVertex(0.320999, 0.972590, 0.320999)
-addVertex(-0.320999, 0.972590, -0.320999)
-addVertex(0.320999, 0.972590, -0.320999)
+addVertex(-0.320999, 0.999000, 0.320999)
+addVertex(0.320999, 0.999000, 0.320999)
+addVertex(-0.320999, 0.999000, -0.320999)
+addVertex(0.320999, 0.999000, -0.320999)
 addFace(27, 26, 25)
 addFace(28, 26, 27)
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
