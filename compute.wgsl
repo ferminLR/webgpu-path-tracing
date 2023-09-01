@@ -222,7 +222,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
 
   // setup camera
   var ray : Ray;
-  let camera_center = vec3(0.0, 0.0, 3.5);
+  let camera_center = vec3(0.0, 0.0, 1.0796);
   var color = vec4(0.0, 0.0, 0.0, 1.0);
   var passes = 5;
 
@@ -245,7 +245,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
     ray.origin = camera_center + vec3(camera_disk, 0.0);
 
     let pos_norm = (vec2f(pos)+v2random())/256.0 - 1.0;
-    let pos_in_camera_plane = vec3(ray.origin.xy + pos_norm*0.05, ray.origin.z - 0.1);
+    let pos_in_camera_plane = vec3(ray.origin.xy + pos_norm*0.0125, ray.origin.z - 0.035);
     ray.direction = normalize(pos_in_camera_plane - ray.origin);
     
     // apply camera transformation
