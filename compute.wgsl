@@ -255,9 +255,11 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
     color += vec4(ray_color(ray), 1.0);
   }
 
-  // weighted average between the new and the accumulated image
-  let newImage = color/f32(passes);
+  // gamma 2
+  let newImage = clamp(sqrt(color/f32(passes)), vec4(0.0), vec4(1.0));
   let accumulated = textureLoad(inputTex, pos, 0);
+
+  // weighted average between the new and the accumulated image
   let result_color = uniforms.weight * newImage
                   + (1.0 - uniforms.weight) * accumulated;
   
