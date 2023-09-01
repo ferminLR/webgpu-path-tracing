@@ -168,18 +168,19 @@ fn ray_color(r : Ray) -> vec3f {
   var ray = r;
   var hit_result = world_hit(ray);
 
+  var final_color = vec3(0.0, 0.0, 0.0); // background at first
+  var bounced_color = vec3(1.0, 1.0, 1.0);
+
   // recursion is not allowed
   while(depth < 5 && (hit_result.hit)){
 
-    // if the first hit is a emissive material, return it directly
-    if(depth == 0 && hit_result.material.emission.a > 0.0){
-      return hit_result.material.emission.rgb;
-    }
+    // if the ray hits a emissive material, return it directly
+    if (hit_result.material.emission.a > 0.0) {
+      final_color = hit_result.material.emission.rgb;
+      break;
 
-    let hit_point = hit_result.point;
-
-    //scatter
-    if(hit_result.material.emission.a == 0.0){
+    } else {
+      let hit_point = hit_result.point;
 
       // bias towards lights
       var light_pdf = 1.0;
@@ -192,24 +193,30 @@ fn ray_color(r : Ray) -> vec3f {
 
       var shadow_hit = world_hit(shadow_ray);
 
-      if(shadow_hit.material.emission.a > 0.0){
-        color += light_pdf * hit_result.material.diffuse.rgb
+      if (shadow_hit.material.emission.a > 0.0 && random()>0.5) {
+        final_color = (1/light_pdf)
+              * 1/(pow(shadow_hit.t, 2))
               * shadow_hit.material.emission.rgb 
+              * abs(dot(shadow_hit.normal, shadow_ray.direction))
+              * hit_result.material.diffuse.rgb
               * abs(dot(hit_result.normal, shadow_ray.direction));
+        break;
+
+      } else {
+        //scatter
+        ray.origin = hit_point;
+        ray.direction = normalize(hit_result.normal + random_in_unit_sphere());
+
+        bounced_color *= hit_result.material.diffuse.rgb;
+        depth++;
+
+        hit_result = world_hit(ray);
       }
     }
-
-    ray.origin = hit_point;
-    ray.direction = normalize(hit_result.normal + random_in_unit_sphere());
-
-    depth++;
-    hit_result = world_hit(ray);
   }
 
-  // protection against NaN
-  if (depth==0) { return vec3(0.0, 0.0, 0.0); }
-  
-  return color/f32(depth);
+  color = final_color*bounced_color;
+  return color;
 }
 
 @compute @workgroup_size(8, 8, 1)
