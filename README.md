@@ -1,6 +1,6 @@
 # WebGPU Path Tracing
 
-A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-pathtracing)
+A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-path-tracing)
 
 ## Path tracer? WebGPU?
 
@@ -20,6 +20,6 @@ This implementation uses WebGPU compute shaders. WebGPU is an API that exposes t
 
 ## How To Use
 
-You can try the demo [here](https://iamferm.in/webgpu-pathtracing).
+You can try the demo [here](https://iamferm.in/webgpu-path-tracing).
 
 If you prefer to run it locally, you can just clone the repository and use your favourite web server; it doesn't have any dependencies!
