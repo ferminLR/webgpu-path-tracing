@@ -1,5 +1,5 @@
-import outputWGSL from './output.wgsl?raw';
-import computeWGSL from './compute.wgsl?raw';
+import outputWGSL from './output.js';
+import computeWGSL from './compute.js';
 import scene from './scene.js';
 
 // Initialize WebGPU context
