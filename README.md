@@ -2,6 +2,8 @@
 
 A simple path tracer powered by WebGPU compute shaders. [Try the demo!](https://iamferm.in/webgpu-path-tracing)
 
+![screenshot](./image.png)
+
 ## Path tracer? WebGPU?
 
 Path tracing is a computer graphics rendering technique used to simulate the way light interacts with objects in a virtual scene to create realistic images. It is a method that attempts to model the physical behavior of light as it travels through a scene and interacts with it.
