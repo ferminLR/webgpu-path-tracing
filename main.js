@@ -2,15 +2,41 @@ import outputWGSL from './output.js';
 import computeWGSL from './compute.js';
 import scene from './scene.js';
 
+// when WebGPU is not available, show a video instead
+const showVideo = (error) => {
+  const disclaimer = document.createElement("div");
+  disclaimer.id = "error";
+  disclaimer.innerHTML = "⚠️ " + error + "<br> 🎥 This a video recording of the scene.";
+  
+  const video = document.createElement("video");
+  video.src = "./video.mp4";
+  video.poster = "./image.png";
+  video.autoplay = true;
+  video.loop = true;
+  video.muted = true;
+  video.height = 512;
+  video.width = 512;
+  video.setAttribute("playsinline", "playsinline");
+
+  const viewport = document.querySelector("#viewport");
+  viewport.append(disclaimer);
+  viewport.append(video);
+  canvas.style.display = "none";
+}
+
 // Initialize WebGPU context
 const canvas = document.querySelector("canvas");
 if (!navigator.gpu) {
-  throw new Error("WebGPU not supported on this browser.");
+  const e = "This browser does not support WebGPU.";
+  showVideo(e);
+  throw new Error(e);
 }
 
 const adapter = await navigator.gpu.requestAdapter();
 if (!adapter) {
-  throw new Error("No appropriate GPUAdapter found.");
+  const e = "Your GPU does not support WebGPU.";
+  showVideo(e);
+  throw new Error(e);
 }
 
 const device = await adapter.requestDevice();
