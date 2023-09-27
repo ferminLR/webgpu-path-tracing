@@ -20,7 +20,7 @@ const addFace = (v0, v1, v2) => {
 }
 
 const meshArray = new Uint32Array(4*6);
-const materialArray = new Float32Array(8*6);
+const materialArray = new Float32Array(12*6); // needed padding
 var meshArrayIndex = 0;
 var materialArrayIndex = 0;
 let vi, fi;
@@ -56,6 +56,10 @@ materialArray[materialArrayIndex++] = white[0];
 materialArray[materialArrayIndex++] = white[1];
 materialArray[materialArrayIndex++] = white[2];
 materialArray[materialArrayIndex++] = 1.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
@@ -96,6 +100,10 @@ materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 1.0; // metallic
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 
 // Short block
 vi = totalVertices/4;
@@ -132,6 +140,10 @@ materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 
 // Light
 vi = totalVertices/4;
@@ -154,6 +166,10 @@ materialArray[materialArrayIndex++] = light[0];
 materialArray[materialArrayIndex++] = light[1];
 materialArray[materialArrayIndex++] = light[2];
 materialArray[materialArrayIndex++] = 1.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 
 // Left wall
 vi = totalVertices/4;
@@ -176,6 +192,10 @@ materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 
 // Right wall
 vi = totalVertices/4;
@@ -194,6 +214,10 @@ materialArray[materialArrayIndex++] = green[0];
 materialArray[materialArrayIndex++] = green[1];
 materialArray[materialArrayIndex++] = green[2];
 materialArray[materialArrayIndex++] = 1.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
+materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;

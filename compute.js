@@ -1,3 +1,5 @@
+// shaders where the path tracing magic happens
+
 const computeWGSL = `
 @group(0) @binding(0) var outputTex : texture_storage_2d<rgba8unorm, write>;
 @group(0) @binding(1) var inputTex : texture_2d<f32>;
@@ -15,8 +17,8 @@ struct Mesh {
 }
 
 struct Material {
-  diffuse : vec4f,
-  emission : vec4f
+  emission : vec4f,
+  metallic : f32,
 }
 
 struct Ray {
@@ -179,6 +181,15 @@ fn ray_color(r : Ray) -> vec3f {
     if (hit_result.material.emission.a > 0.0) {
       final_color = hit_result.material.emission.rgb;
       break;
+
+    } else if (hit_result.material.metallic >= random()) {
+      let hit_point = hit_result.point;
+      ray.origin = hit_point;
+      ray.direction = reflect(ray.direction, hit_result.normal);
+
+      depth++;
+
+      hit_result = world_hit(ray);
 
     } else {
       let hit_point = hit_result.point;
