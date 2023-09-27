@@ -187,6 +187,7 @@ fn ray_color(r : Ray) -> vec3f {
       ray.origin = hit_point;
       ray.direction = reflect(ray.direction, hit_result.normal);
 
+      bounced_color *= hit_result.material.diffuse.rgb;
       depth++;
 
       hit_result = world_hit(ray);
