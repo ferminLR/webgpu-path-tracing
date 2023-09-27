@@ -19,6 +19,7 @@ struct Mesh {
 struct Material {
   emission : vec4f,
   metallic : f32,
+  roughness : f32,
 }
 
 struct Ray {
@@ -186,6 +187,10 @@ fn ray_color(r : Ray) -> vec3f {
       let hit_point = hit_result.point;
       ray.origin = hit_point;
       ray.direction = reflect(ray.direction, hit_result.normal);
+
+      // surface roughness
+      ray.direction += random_in_unit_sphere()*hit_result.material.roughness;
+      ray.direction = normalize(ray.direction);
 
       bounced_color *= hit_result.material.diffuse.rgb;
       depth++;
