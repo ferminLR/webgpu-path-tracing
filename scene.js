@@ -5,18 +5,18 @@ const indexArray = new Uint32Array(4*36);
 
 var totalVertices = 0;
 const addVertex = (x,y,z) => {
-    vertexArray[totalVertices++] = x;
-    vertexArray[totalVertices++] = y;
-    vertexArray[totalVertices++] = z;
-    vertexArray[totalVertices++] = 0.0;
+  vertexArray[totalVertices++] = x;
+  vertexArray[totalVertices++] = y;
+  vertexArray[totalVertices++] = z;
+  vertexArray[totalVertices++] = 0.0;
 }
 
 var totalIndices = 0;
 const addFace = (v0, v1, v2) => {
-    indexArray[totalIndices++] = v0-1;
-    indexArray[totalIndices++] = v1-1;
-    indexArray[totalIndices++] = v2-1;
-    indexArray[totalIndices++] = 0;
+  indexArray[totalIndices++] = v0-1;
+  indexArray[totalIndices++] = v1-1;
+  indexArray[totalIndices++] = v2-1;
+  indexArray[totalIndices++] = 0;
 }
 
 const meshArray = new Uint32Array(4*6);
@@ -200,10 +200,10 @@ materialArray[materialArrayIndex++] = 0.0;
 materialArray[materialArrayIndex++] = 0.0;
 
 let scene = {
-    vertexArray: vertexArray,
-    indexArray: indexArray,
-    meshArray: meshArray,
-    materialArray: materialArray,
+  vertexArray: vertexArray,
+  indexArray: indexArray,
+  meshArray: meshArray,
+  materialArray: materialArray,
 }
 
 export default scene
