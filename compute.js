@@ -17,6 +17,7 @@ struct Mesh {
 }
 
 struct Material {
+  color : vec4f,
   emission : vec4f,
   metallic : f32,
   roughness : f32,
@@ -192,7 +193,7 @@ fn ray_color(r : Ray) -> vec3f {
       ray.direction += random_in_unit_sphere()*hit_result.material.roughness;
       ray.direction = normalize(ray.direction);
 
-      bounced_color *= hit_result.material.diffuse.rgb;
+      bounced_color *= hit_result.material.color.rgb;
       depth++;
 
       hit_result = world_hit(ray);
@@ -216,7 +217,7 @@ fn ray_color(r : Ray) -> vec3f {
               * 1/(pow(shadow_hit.t, 2))
               * shadow_hit.material.emission.rgb 
               * abs(dot(shadow_hit.normal, shadow_ray.direction))
-              * hit_result.material.diffuse.rgb
+              * hit_result.material.color.rgb
               * abs(dot(hit_result.normal, shadow_ray.direction));
         break;
 
@@ -225,7 +226,7 @@ fn ray_color(r : Ray) -> vec3f {
         ray.origin = hit_point;
         ray.direction = normalize(hit_result.normal + random_in_unit_sphere());
 
-        bounced_color *= hit_result.material.diffuse.rgb;
+        bounced_color *= hit_result.material.color.rgb;
         depth++;
 
         hit_result = world_hit(ray);
