@@ -25,11 +25,47 @@ var meshArrayIndex = 0;
 var materialArrayIndex = 0;
 let vi, fi;
 
-// Material colors
-let white = [0.73, 0.73, 0.73];
-let red = [0.65, 0.05, 0.05];
-let green = [0.12, 0.45, 0.15];
-let light = [15.0, 15.0, 15.0];
+function color(r,g,b,a){
+  this.r = r;
+  this.g = g;
+  this.b = b;
+  this.a = a;
+}
+
+function material(color, emission, metallic, roughness){
+  this.color = color;
+  this.emission = emission;
+  this.metallic = metallic;
+  this.roughness = roughness;
+}
+
+const pushMaterial = (mat) => {
+  materialArray[materialArrayIndex++] = mat.color.r;
+  materialArray[materialArrayIndex++] = mat.color.g;
+  materialArray[materialArrayIndex++] = mat.color.b;
+  materialArray[materialArrayIndex++] = mat.color.a;
+  materialArray[materialArrayIndex++] = mat.emission.r;
+  materialArray[materialArrayIndex++] = mat.emission.g;
+  materialArray[materialArrayIndex++] = mat.emission.b;
+  materialArray[materialArrayIndex++] = mat.emission.a;
+  materialArray[materialArrayIndex++] = mat.metallic;
+  materialArray[materialArrayIndex++] = mat.roughness;
+  materialArray[materialArrayIndex++] = 0.0;
+  materialArray[materialArrayIndex++] = 0.0;
+}
+
+// Materials
+const transparentBlack = new color(0.0, 0.0, 0.0, 0.0);
+const gray = new color(0.73, 0.73, 0.73, 1.0);
+const red = new color(0.65, 0.05, 0.05, 1.0);
+const green = new color(0.12, 0.45, 0.15, 1.0);
+const light = new color(15.0, 15.0, 15.0, 1.0);
+
+const grayMaterial = new material(gray, transparentBlack, 0.0, 0.0);
+const metalMaterial = new material(gray, transparentBlack, 1.0, 0.0);
+const lightMaterial = new material(gray, light, 0.0, 0.0);
+const redMaterial = new material(red, transparentBlack, 0.0, 0.0);
+const greenMaterial = new material(green, transparentBlack, 0.0, 0.0);
 
 // Floor, back wall and ceiling
 vi = totalVertices/4;
@@ -52,18 +88,7 @@ addFace(7, 4, 3);
 addFace(7, 6, 4);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = white[0];
-materialArray[materialArrayIndex++] = white[1];
-materialArray[materialArrayIndex++] = white[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(grayMaterial);
 
 // Tall block
 vi = totalVertices/4;
@@ -92,18 +117,7 @@ addFace(15, 13, 9);
 addFace(12, 10, 14);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = white[0];
-materialArray[materialArrayIndex++] = white[1];
-materialArray[materialArrayIndex++] = white[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 1.0; // metallic
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(metalMaterial);
 
 // Short block
 vi = totalVertices/4;
@@ -132,18 +146,7 @@ addFace(23, 21, 17);
 addFace(20, 18, 22);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = white[0];
-materialArray[materialArrayIndex++] = white[1];
-materialArray[materialArrayIndex++] = white[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(grayMaterial);
 
 // Light
 vi = totalVertices/4;
@@ -158,18 +161,7 @@ addFace(27, 26, 25);
 addFace(27, 28, 26);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = white[0];
-materialArray[materialArrayIndex++] = white[1];
-materialArray[materialArrayIndex++] = white[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = light[0];
-materialArray[materialArrayIndex++] = light[1];
-materialArray[materialArrayIndex++] = light[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(lightMaterial);
 
 // Left wall
 vi = totalVertices/4;
@@ -184,18 +176,7 @@ addFace(32, 29, 30);
 addFace(32, 31, 29);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = red[0];
-materialArray[materialArrayIndex++] = red[1];
-materialArray[materialArrayIndex++] = red[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(redMaterial);
 
 // Right wall
 vi = totalVertices/4;
@@ -210,18 +191,7 @@ addFace(36, 34, 33);
 addFace(36, 35, 34);
 meshArray[meshArrayIndex++] = totalVertices/4 - vi;
 meshArray[meshArrayIndex++] = totalIndices/4 - fi;
-materialArray[materialArrayIndex++] = green[0];
-materialArray[materialArrayIndex++] = green[1];
-materialArray[materialArrayIndex++] = green[2];
-materialArray[materialArrayIndex++] = 1.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
-materialArray[materialArrayIndex++] = 0.0;
+pushMaterial(greenMaterial);
 
 let scene = {
   vertexArray: vertexArray,
