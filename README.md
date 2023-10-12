@@ -12,7 +12,7 @@ This implementation uses WebGPU compute shaders. WebGPU is an API that exposes t
 
 ## What it does NOT have (yet)
 
-* Any materials other than lambertian diffuse and mirror
+* Any materials other than lambertian diffuse and metal
 * Bounding volume hierarchies
 * More than one light source
 * A denoising stage
@@ -25,3 +25,8 @@ This implementation uses WebGPU compute shaders. WebGPU is an API that exposes t
 You can try the demo [here](https://iamferm.in/webgpu-path-tracing).
 
 If you prefer to run it locally, you can just clone the repository and use your favourite web server; it doesn't have any dependencies!
+
+## You may also like...
+
+* [Raytracing in one weekend](https://raytracing.github.io/)
+* [WebGL Path Tracing](https://github.com/evanw/webgl-path-tracing)
