@@ -303,22 +303,35 @@ const renderLoop = () => {
 requestId = requestAnimationFrame(renderLoop);
 
 // Camera orbit controls
-addEventListener( 'pointerdown', () => {
+let pointerPrevX = 0, pointerPrevY = 0;
 
-  const onPointerMove = (e) => {
-    cameraAzimuth += e.movementX * Math.PI/180;
-    cameraElevation += e.movementY * Math.PI/180;
+const onPointerMove = (e) => {
+  e.preventDefault();
+  e = typeof(e.touches) != 'undefined' ? e.touches[0] : e;
 
-    // reset renderloop
-    step = 0;
-    if(requestId) cancelAnimationFrame(requestId);
-    requestId = requestAnimationFrame(renderLoop);
-  }
+  cameraAzimuth += (e.clientX - pointerPrevX) * Math.PI/180;
+  cameraElevation += (e.clientY - pointerPrevY) * Math.PI/180;
+  pointerPrevX = e.clientX;
+  pointerPrevY = e.clientY;
 
-  addEventListener('pointermove', onPointerMove);
+  // reset renderloop
+  step = 0;
+  if(requestId) cancelAnimationFrame(requestId);
+  requestId = requestAnimationFrame(renderLoop);
+}
 
-  addEventListener('pointerup', () => {
-    removeEventListener( 'pointermove', onPointerMove );
-  });
+canvas.addEventListener('touchmove', onPointerMove);
+canvas.addEventListener('touchstart', (e) => {
+  pointerPrevX = e.touches[0].clientX;
+  pointerPrevY = e.touches[0].clientY;  
+});
 
+canvas.addEventListener('mousedown', (e) => {
+  pointerPrevX = e.clientX;
+  pointerPrevY = e.clientY;
+  canvas.addEventListener('mousemove', onPointerMove);
+});
+
+addEventListener('mouseup', () => {
+  canvas.removeEventListener( 'mousemove', onPointerMove );
 });
