@@ -175,7 +175,14 @@ const materialBuffer = device.createBuffer({
 device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 
 // Compute shader uniforms
-const computeUniformsArray = new Float32Array([100.0, 1.0, 0.0, 0.0]);
+const computeUniformsArray = new ArrayBuffer(24);
+const computeUniformsFloat = new Float32Array(computeUniformsArray, 0, 4);
+
+computeUniformsFloat[0] = 100.0;
+computeUniformsFloat[1] = 1.0;
+computeUniformsFloat[2] = 0.0;
+computeUniformsFloat[3] = 0.0;
+
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",
   size: computeUniformsArray.byteLength,
@@ -288,10 +295,10 @@ const renderLoop = () => {
 
   // Update uniforms buffer
   initialSeed += 0.01;
-  computeUniformsArray[0] = initialSeed;
-  computeUniformsArray[1] = 1.0/++step;
-  computeUniformsArray[2] = cameraAzimuth;
-  computeUniformsArray[3] = cameraElevation;
+  computeUniformsFloat[0] = initialSeed;
+  computeUniformsFloat[1] = 1.0/++step;
+  computeUniformsFloat[2] = cameraAzimuth;
+  computeUniformsFloat[3] = cameraElevation;
   device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
 
   // Submit the command buffer
