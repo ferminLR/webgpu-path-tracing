@@ -179,12 +179,12 @@ const computeUniformsArray = new ArrayBuffer(24);
 const computeUniformsFloat = new Float32Array(computeUniformsArray, 0, 4);
 const computeUniformsUint = new Uint32Array(computeUniformsArray, 16, 2);
 
-computeUniformsFloat[0] = 100.0;
-computeUniformsFloat[1] = 1.0;
-computeUniformsFloat[2] = 0.0;
-computeUniformsFloat[3] = 0.0;
-computeUniformsUint[0] = 1;
-computeUniformsUint[1] = 1;
+computeUniformsFloat[0] = 100.0;  // seed
+computeUniformsFloat[1] = 1.0;    // weight
+computeUniformsFloat[2] = 0.0;    // cam_azimuth
+computeUniformsFloat[3] = 0.0;    // cam_elevation
+computeUniformsUint[0] = 1;       // bounces
+computeUniformsUint[1] = 1;       // samples
 
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",
