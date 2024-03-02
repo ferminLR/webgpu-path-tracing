@@ -250,7 +250,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   var ray : Ray;
   let camera_center = vec3(0.0, 0.0, 1.0796);
   var color = vec4(0.0, 0.0, 0.0, 1.0);
-  var passes = 5;
+  var samples = 5;
 
   // camera rotation
   let camera_rot_y = mat3x3(
@@ -265,8 +265,8 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   );
   let camera_matrix = camera_rot_y * camera_rot_x;
 
-  // repeat each pixel "passes" times
-  for(var i=0; i<passes; i++){
+  // repeat each pixel "samples" times
+  for(var i=0; i<samples; i++){
     let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
     ray.origin = camera_center + vec3(camera_disk, 0.0);
 
@@ -282,7 +282,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   }
 
   // gamma 2
-  let newImage = clamp(sqrt(color/f32(passes)), vec4(0.0), vec4(1.0));
+  let newImage = clamp(sqrt(color/f32(samples)), vec4(0.0), vec4(1.0));
   let accumulated = textureLoad(inputTex, pos, 0);
 
   // weighted average between the new and the accumulated image
