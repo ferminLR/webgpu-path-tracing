@@ -177,11 +177,14 @@ device.queue.writeBuffer(materialBuffer, 0, scene.materialArray);
 // Compute shader uniforms
 const computeUniformsArray = new ArrayBuffer(24);
 const computeUniformsFloat = new Float32Array(computeUniformsArray, 0, 4);
+const computeUniformsUint = new Uint32Array(computeUniformsArray, 16, 2);
 
 computeUniformsFloat[0] = 100.0;
 computeUniformsFloat[1] = 1.0;
 computeUniformsFloat[2] = 0.0;
 computeUniformsFloat[3] = 0.0;
+computeUniformsUint[0] = 4;
+computeUniformsUint[1] = 5;
 
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",

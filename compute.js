@@ -41,6 +41,8 @@ struct Uniforms {
   weight: f32,
   cam_azimuth: f32,
   cam_elevation: f32,
+  bounces: u32,
+  samples: u32,
 };
 
 var<private> seed : f32;
@@ -168,7 +170,7 @@ fn world_hit(r : Ray) -> HitRecord {
 
 fn ray_color(r : Ray) -> vec3f {
 
-  var depth = 0;
+  var depth = 0u;
   var color = vec3(0.0, 0.0, 0.0); // background color
   var ray = r;
   var hit_result = world_hit(ray);
@@ -177,7 +179,7 @@ fn ray_color(r : Ray) -> vec3f {
   var bounced_color = vec3(1.0, 1.0, 1.0);
 
   // recursion is not allowed
-  while(depth < 5 && (hit_result.hit)){
+  while(depth < uniforms.bounces+1 && (hit_result.hit)){
 
     // if the ray hits a emissive material, return it directly
     if (hit_result.material.emission.a > 0.0) {
@@ -250,7 +252,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   var ray : Ray;
   let camera_center = vec3(0.0, 0.0, 1.0796);
   var color = vec4(0.0, 0.0, 0.0, 1.0);
-  var samples = 5;
+  var samples = uniforms.samples;
 
   // camera rotation
   let camera_rot_y = mat3x3(
@@ -266,7 +268,7 @@ fn compute_main(@builtin(global_invocation_id) GlobalInvocationID: vec3u) {
   let camera_matrix = camera_rot_y * camera_rot_x;
 
   // repeat each pixel "samples" times
-  for(var i=0; i<samples; i++){
+  for(var i=0u; i<samples; i++){
     let camera_disk = 0.00001*random_in_unit_disk(); // camera aperture
     ray.origin = camera_center + vec3(camera_disk, 0.0);
 
