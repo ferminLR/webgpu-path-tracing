@@ -183,8 +183,8 @@ computeUniformsFloat[0] = 100.0;
 computeUniformsFloat[1] = 1.0;
 computeUniformsFloat[2] = 0.0;
 computeUniformsFloat[3] = 0.0;
-computeUniformsUint[0] = 4;
-computeUniformsUint[1] = 5;
+computeUniformsUint[0] = 1;
+computeUniformsUint[1] = 1;
 
 const computeUniformsBuffer = device.createBuffer({
   label: "Compute uniforms",
@@ -302,10 +302,24 @@ const renderLoop = () => {
   computeUniformsFloat[1] = 1.0/++step;
   computeUniformsFloat[2] = cameraAzimuth;
   computeUniformsFloat[3] = cameraElevation;
+
+  // when moving the camera, to improve responsiveness
+  // reduce samples and bounces to the minimum
+  if (pointerMoving){
+    computeUniformsUint[0] = 1;  // bounces
+    computeUniformsUint[1] = 1;  // samples
+  }else{
+    computeUniformsUint[0] = 4;
+    computeUniformsUint[1] = 5;
+  }
+
   device.queue.writeBuffer(computeUniformsBuffer, 0, computeUniformsArray);
 
   // Submit the command buffer
   device.queue.submit([encoder.finish()]);
+
+  // just one pass when moving the camera
+  if (pointerMoving) return; 
 
   requestId = requestAnimationFrame(renderLoop);
 }
@@ -314,6 +328,7 @@ requestId = requestAnimationFrame(renderLoop);
 
 // Camera orbit controls
 let pointerPrevX = 0, pointerPrevY = 0;
+let pointerMoving = false;
 
 const onPointerMove = (e) => {
   e.preventDefault();
@@ -330,18 +345,29 @@ const onPointerMove = (e) => {
   requestId = requestAnimationFrame(renderLoop);
 }
 
+// mobile touch events
 canvas.addEventListener('touchmove', onPointerMove);
 canvas.addEventListener('touchstart', (e) => {
   pointerPrevX = e.touches[0].clientX;
   pointerPrevY = e.touches[0].clientY;  
+  pointerMoving = true;
 });
 
+canvas.addEventListener('touchend', (e) => {
+  pointerMoving = false;
+  requestId = requestAnimationFrame(renderLoop);
+});
+
+// desktop mouse events
 canvas.addEventListener('mousedown', (e) => {
   pointerPrevX = e.clientX;
   pointerPrevY = e.clientY;
   canvas.addEventListener('mousemove', onPointerMove);
+  pointerMoving = true;
 });
 
 addEventListener('mouseup', () => {
   canvas.removeEventListener( 'mousemove', onPointerMove );
+  pointerMoving = false;
+  requestId = requestAnimationFrame(renderLoop);
 });
